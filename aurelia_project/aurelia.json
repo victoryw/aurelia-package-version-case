@@ -56,8 +56,7 @@
       {
         "id": "web",
         "displayName": "Web",
-        "output": "scripts",
-        "index": "index.html"
+        "output": "scripts"
       }
     ],
     "loader": {
