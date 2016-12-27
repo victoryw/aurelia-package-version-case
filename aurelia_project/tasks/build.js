@@ -11,6 +11,7 @@ import find from 'find'
 import _ from 'underscore'
 import jsonfile from 'jsonfile'
 import path from 'path'
+import fse from 'fs-extra'
 
 
 export default gulp.series(
@@ -32,16 +33,21 @@ function writeBundles() {
   return build.dest();
 }
 
+
+function copyFileToDestin(){
+  return gulp.src
+}
+
 function updateIndexFileRef() {
   let revFileLocation = path.join('./','scripts/rev-manifest.json');
-  var manifest = gulp.src(revFileLocation);
   getBundleFileNames(revFileLocation);
+  var manifest = gulp.src(revFileLocation);
 
   return gulp.src(["./index.html","./index2.html"])
     .pipe(revReplace({
         manifest: manifest
     }))
-    .pipe(gulp.dest("./"));
+    .pipe(gulp.dest("./scripts"));
 }
 
 
@@ -70,6 +76,10 @@ function getBundleFileNames(revFileLocation) {
       })
       .value(),
       _.values));
+
+  console.log(fileVecMappings);
+  // fse.copySync('./scripts/'+file.name, './scripts/scripts'+file.name)
+  fileVecMappings.forEach(file => fse.copySync('./scripts/'+file.name, './scripts/scripts/'+file.name));
 
   jsonfile.writeFileSync(revFileLocation, mapping);
 
