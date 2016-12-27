@@ -12,6 +12,7 @@
     "aurelia-bootstrapper": "^1.0.0",
     "bluebird": "^3.4.1",
     "bootstrap": "^3.3.7",
+    "fs-finder": "^1.8.1",
     "jquery": "^2.2.4",
     "nprogress": "^0.2.0",
     "requirejs": "^2.3.2",
@@ -35,6 +36,7 @@
     "babel-register": "^6.9.0",
     "browser-sync": "^2.13.0",
     "connect-history-api-fallback": "^1.2.0",
+    "find": "^0.2.7",
     "gulp": "github:gulpjs/gulp#4.0",
     "gulp-babel": "^6.1.2",
     "gulp-changed-in-place": "^2.0.3",
@@ -42,9 +44,11 @@
     "gulp-notify": "^2.2.0",
     "gulp-plumber": "^1.1.0",
     "gulp-rename": "^1.2.2",
+    "gulp-rev": "^7.1.2",
     "gulp-rev-replace": "^0.4.3",
     "gulp-sourcemaps": "^2.0.0-alpha",
     "jasmine-core": "^2.4.1",
+    "jsonfile": "^2.4.0",
     "karma": "^0.13.22",
     "karma-babel-preprocessor": "^6.0.1",
     "karma-chrome-launcher": "^1.0.1",
@@ -52,6 +56,7 @@
     "minimatch": "^3.0.2",
     "through2": "^2.0.1",
     "uglify-js": "^2.6.3",
+    "underscore": "^1.8.3",
     "vinyl-fs": "^2.4.3"
   }
 }
