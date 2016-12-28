@@ -16,6 +16,7 @@ import {CLIOptions, build} from 'aurelia-cli';
 
 export default gulp.series(
   readProjectConfiguration,
+  cleanEnv,
   //should clean the output folder when the rev is enabled
   gulp.parallel(
     transpile,
@@ -27,16 +28,23 @@ export default gulp.series(
 );
 
 function readProjectConfiguration() {
-  if(isEnableRev()){
-    let outputFolder = project.build.targets[0].output;
-    deleteFolderRecursive(outputFolder);
-  }
   return build.src(project);
 }
 
 function writeBundles() {
   return build.dest();
 }
+
+
+function cleanEnv(callback) {
+  if(isEnableRev()){
+    let outputFolder = project.build.targets[0].output;
+    deleteFolderRecursive(outputFolder);
+  }
+  callback();
+}
+
+
 
 
 
@@ -78,7 +86,8 @@ function updateIndexFileRef2(){
   }
   else{
     jsonfile.writeFileSync(revFileLocation, mapping);
-    files.forEach(file => fse.copySync(outputFolder+'/'+file, outputFolder+'/'+'/'+file));
+    console.log(files);
+    files.map(file=>file.replace(outputFolder+'/','')).forEach(file => fse.copySync('./'+outputFolder+'/'+file, './'+outputFolder+'/'+outputFolder+'/'+file));
   }
 
 
