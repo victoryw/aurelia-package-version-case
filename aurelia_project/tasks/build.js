@@ -27,6 +27,10 @@ export default gulp.series(
 );
 
 function readProjectConfiguration() {
+  if(isEnableRev()){
+    let outputFolder = project.build.targets[0].output;
+    deleteFolderRecursive(outputFolder);
+  }
   return build.src(project);
 }
 
@@ -35,9 +39,6 @@ function writeBundles() {
 }
 
 
-function copyFileToDestin(){
-  return gulp.src
-}
 
 function updateIndexFileRef2(){
   //delete  rev-manifest.json, file location should be accorded to aurelia.json setting
@@ -50,10 +51,8 @@ function updateIndexFileRef2(){
 
   let mapping = {};
   let files = find.fileSync(/\.js$/,outputFolder).filter(file => {return file.split('/').length <=2;});
-  
-  if(isEnableRev(project.build.options)){
 
-
+  if(isEnableRev()){
     var fileVecMappings = files.map(file => {
       let names = file.split(/[-.]/); //the name should be app-bundle-c8a2963f94.js
       ///TODO:app-bundle.js
@@ -62,9 +61,7 @@ function updateIndexFileRef2(){
         source: file.replace(outputFolder+'/','').replace("-"+names[names.length - 2],""),
         createTime: fs.statSync(file).mtime.getTime()
       }});
-
-
-    // console.log(_.max(value,file=>file.createTime));
+    ;
     mapping = _.object(
       _.map(_.chain(fileVecMappings)
         .groupBy(file=> {return file.source})
@@ -91,16 +88,10 @@ function updateIndexFileRef2(){
       {manifest: manifest}
     ))
     .pipe(gulp.dest(outputFolder));
-
-  //if rev enable in the env then create actully rev-manifest.json
-  //else output empty rev-manifest.json
-
-  //replace the build entry point reference of bundle.js by rev-manifest.json
-  //if rev-manifest is empty should keep the origin reference
-  //and out put the replaced entry point to output file
 }
 
-function isEnableRev(options) {
+function isEnableRev() {
+  let options = project.build.options;
   let env = CLIOptions.getEnvironment();
   let revValue = options['rev'];
 
@@ -114,53 +105,18 @@ function isEnableRev(options) {
   }
 }
 
-function updateIndexFileRef() {
-  let revFileLocation = path.join('./','scripts/rev-manifest.json');
-  getBundleFileNames(revFileLocation);
-  var manifest = gulp.src(revFileLocation);
-
-  return gulp.src(["./index.html","./index2.html"])
-    .pipe(revReplace({
-        manifest: manifest
-    }))
-    .pipe(gulp.dest("./scripts"));
-}
-
-
-function getBundleFileNames(revFileLocation) {
-  let files = find.fileSync(/\.js$/,'./scripts');
-
-  var fileVecMappings = files.map(file => {
-    let names = file.split(/[-.]/); //the name should be app-bundle-c8a2963f94.js
-    ///TODO:app-bundle.js
-    return {
-      name : file.replace('scripts/',''),
-      source: file.replace('scripts/','').replace("-"+names[names.length - 2],""),
-      createTime: fs.statSync(file).mtime.getTime()
-    }});
-
-
-  // console.log(_.max(value,file=>file.createTime));
-  var mapping = _.object(
-    _.map(_.chain(fileVecMappings)
-      .groupBy(file=> {return file.source})
-      .map((value, key)=> {
-        return {
-          source : key,
-          fileRev: _.max(value, file=> {return file.createTime}).name
-        }
-      })
-      .value(),
-      _.values));
-
-  console.log(fileVecMappings);
-  // fse.copySync('./scripts/'+file.name, './scripts/scripts'+file.name)
-  fileVecMappings.forEach(file => fse.copySync('./scripts/'+file.name, './scripts/scripts/'+file.name));
-
-  jsonfile.writeFileSync(revFileLocation, mapping);
-
-}
-
-
+var deleteFolderRecursive = function(path) {
+  if( fs.existsSync(path) ) {
+    fs.readdirSync(path).forEach(function(file,index){
+      var curPath = path + "/" + file;
+      if(fs.lstatSync(curPath).isDirectory()) { // recurse
+        deleteFolderRecursive(curPath);
+      } else { // delete file
+        fs.unlinkSync(curPath);
+      }
+    });
+    fs.rmdirSync(path);
+  }
+};
 
 
